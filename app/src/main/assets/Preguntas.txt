@@ -1,4 +1,6 @@
 ¿A qué país pertenece esta bandera?
+bandera_uganda
+Imagen de la bandera
 Mali
 Uganda
 Mozambique
@@ -6,6 +8,8 @@ Somalia
 Uganda
 
 ¿Cuál es la capital de Kenia?
+kenia
+Kenia en el mapa
 Nairobi
 Kampala
 Dar es Salaam
@@ -13,6 +17,8 @@ Lusaka
 Nairobi
 
 ¿Cuál es el nombre del estrecho que separa Asia de África?
+estrecho_gibraltar
+foto del estrecho
 Estrecho de Gibraltar
 Estrecho de Hormuz
 Estrecho de Malaca
@@ -20,6 +26,8 @@ Estrecho de Bering
 Estrecho de Gibraltar
 
 ¿Cuál es la segunda montaña más alta del mundo, después del Monte Everest?
+monte_k2
+foto de la montaña
 K2
 Kangchenjunga
 Annapurna
@@ -27,6 +35,8 @@ Lhotse
 K2
 
 ¿En qué país se encuentra el lago Titicaca, el lago navegable más alto del mundo?
+lago_titicaca
+foto del lago Titicaca
 Bolivia
 Chile
 Perú
@@ -34,6 +44,8 @@ Argentina
 Bolivia
 
 ¿Cuál es el país más grande del mundo?
+mapa_mundi
+mapa mundi
 Canadá
 China
 Rusia
@@ -41,6 +53,8 @@ Estados Unidos
 Rusia
 
 ¿En qué país se encuentra el desierto de Kalahari?
+desierto_kalahari
+foto del desierto del Kalahari
 Sudáfrica
 Namibia
 Botswana
@@ -48,6 +62,8 @@ Zimbabwe
 Botswana
 
 ¿Cuál es el país más pequeño del continente africano?
+gambia
+imagen del mapa africano
 Seychelles
 Comoras
 Gambia

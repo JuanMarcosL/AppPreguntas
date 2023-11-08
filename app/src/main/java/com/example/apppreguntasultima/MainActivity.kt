@@ -55,7 +55,7 @@ class MainActivity : ComponentActivity() {
                     val listaPreguntas = ManejoFichero.leerFichero(LocalContext.current)
                     var indice by remember { mutableStateOf(0) }
 
-                    //listaPreguntas.forEach{ println(listaPreguntas.toString())}
+                    listaPreguntas.forEach { println(listaPreguntas.toString()) }
                     if (indice == -1) {
                         indice = listaPreguntas.lastIndex
                     } else if (indice > listaPreguntas.lastIndex) {
@@ -69,6 +69,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
 @Composable
 fun mostrarPregunta(question: Pregunta, indice: (Int) -> Unit) {
     println("Pregunta recibida en pregunta: ${question.toString()}")
@@ -77,7 +78,7 @@ fun mostrarPregunta(question: Pregunta, indice: (Int) -> Unit) {
             .fillMaxSize()
             .background(color = Color(0xFFA2C4DB))
     ) {
-        imagen()
+        imagen(question)
         Spacer(modifier = Modifier.height(8.dp))
         pregunta(question)
         Spacer(modifier = Modifier.height(20.dp))
@@ -88,10 +89,13 @@ fun mostrarPregunta(question: Pregunta, indice: (Int) -> Unit) {
 }
 
 @Composable
-fun imagen() {
+fun imagen(pregunta: Pregunta) {
+
+    val imageResourceID = LocalContext.current.resources.getIdentifier(
+        pregunta.imagen, "drawable", LocalContext.current.packageName)
     Image(
-        painter = painterResource(id = R.drawable.bandera_uganda),
-        contentDescription = "Bandera de Uganda",
+        painter = painterResource(id = imageResourceID),
+        contentDescription = pregunta.descripcionImagen,
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight(0.35f)
