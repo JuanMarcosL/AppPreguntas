@@ -55,7 +55,9 @@ class MainActivity : ComponentActivity() {
                     val listaPreguntas = ManejoFichero.leerFichero(LocalContext.current)
                     var indice by remember { mutableStateOf(0) }
 
-                    listaPreguntas.forEach { println(listaPreguntas.toString()) }
+                    val seleccionada by remember { mutableStateOf(false) }
+
+                   // listaPreguntas.forEach { println(listaPreguntas.toString()) }
                     if (indice == -1) {
                         indice = listaPreguntas.lastIndex
                     } else if (indice > listaPreguntas.lastIndex) {
@@ -72,7 +74,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun mostrarPregunta(question: Pregunta, indice: (Int) -> Unit) {
-    println("Pregunta recibida en pregunta: ${question.toString()}")
+    //println("Pregunta recibida en pregunta: ${question.toString()}")
     Column(
         modifier = Modifier
             .fillMaxSize()
