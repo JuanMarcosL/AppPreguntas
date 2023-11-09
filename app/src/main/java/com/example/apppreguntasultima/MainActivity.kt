@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
@@ -57,7 +56,7 @@ class MainActivity : ComponentActivity() {
 
                     val seleccionada by remember { mutableStateOf(false) }
 
-                   // listaPreguntas.forEach { println(listaPreguntas.toString()) }
+                    // listaPreguntas.forEach { println(listaPreguntas.toString()) }
                     if (indice == -1) {
                         indice = listaPreguntas.lastIndex
                     } else if (indice > listaPreguntas.lastIndex) {
@@ -213,51 +212,6 @@ fun botonesAnteriorYSiguiente(pregunta: Pregunta, indice: (Int) -> Unit) {
         }
     }
 }
-/*
-@Composable
-fun BotonAnterior(indice: (Int) -> Unit) {
-    Button(
-        onClick = { indice (-1) },
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color.Blue
-        ),
-        modifier = Modifier.padding(16.dp)
-    ) {
-        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Flecha atrás")
-        Text(
-            text = " Anterior",
-            style = TextStyle(
-                fontSize = 20.sp,
-                color = Color.White
-            )
-        )
-    }
-
-}
-
-@Composable
-fun BotonSiguiente(indice: (Int) -> Unit) {
-    Button(
-        onClick = { indice (1) },
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color.Blue
-        ),
-        modifier = Modifier.padding(16.dp)
-    ) {
-        Text(
-            text = "Siguiente",
-            style = TextStyle(
-                fontSize = 20.sp,
-                color = Color.White
-            )
-        )
-        Icon(
-            imageVector = Icons.Default.ArrowForward,
-            contentDescription = "Flecha adelante"
-        )
-    }
-}
-*/
 
 
 

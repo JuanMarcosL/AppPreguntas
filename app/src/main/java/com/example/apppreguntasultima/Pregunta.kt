@@ -9,4 +9,5 @@ data class Pregunta(
     val opcionC:String,
     val opcionD:String,
     val respuestaCorrecta:String,
+    var respondida: Boolean = false
 )
