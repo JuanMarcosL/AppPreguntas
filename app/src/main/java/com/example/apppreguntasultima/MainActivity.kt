@@ -32,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -54,7 +55,8 @@ class MainActivity : ComponentActivity() {
                     val listaPreguntas = ManejoFichero.leerFichero(LocalContext.current)
                     var indice by remember { mutableStateOf(0) }
 
-                    val seleccionada by remember { mutableStateOf(false) }
+                    //val seleccionada by remember { mutableStateOf(false) }
+
 
                     // listaPreguntas.forEach { println(listaPreguntas.toString()) }
                     if (indice == -1) {
@@ -73,7 +75,8 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun mostrarPregunta(question: Pregunta, indice: (Int) -> Unit) {
-    //println("Pregunta recibida en pregunta: ${question.toString()}")
+    //println("Pregunta recibida en pregunta: ${question.toString()}
+    var selected by remember { mutableStateOf(false) }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -83,9 +86,14 @@ fun mostrarPregunta(question: Pregunta, indice: (Int) -> Unit) {
         Spacer(modifier = Modifier.height(8.dp))
         pregunta(question)
         Spacer(modifier = Modifier.height(20.dp))
-        opciones(question)
+        opciones(question, selected){ pintarSelected ->
+            selected = pintarSelected
+        }
         //Spacer(modifier = Modifier.height(20.dp))
-        botonesAnteriorYSiguiente(question) { cambiaIndice -> indice(cambiaIndice) }
+        botonesAnteriorYSiguiente(question) {
+                cambiaIndice -> indice(cambiaIndice)
+            selected = false
+        }
     }
 }
 
@@ -93,10 +101,12 @@ fun mostrarPregunta(question: Pregunta, indice: (Int) -> Unit) {
 fun imagen(pregunta: Pregunta) {
 
     val imageResourceID = LocalContext.current.resources.getIdentifier(
-        pregunta.imagen, "drawable", LocalContext.current.packageName)
+        pregunta.imagen, "drawable", LocalContext.current.packageName
+    )
     Image(
         painter = painterResource(id = imageResourceID),
         contentDescription = pregunta.descripcionImagen,
+        contentScale = ContentScale.FillBounds,
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight(0.35f)
@@ -112,7 +122,8 @@ fun pregunta(pregunta: Pregunta) {
             .fillMaxHeight(0.22f)
             .background(color = Color.White)
             .fillMaxWidth()
-            .padding(16.dp), contentAlignment = Alignment.Center
+            .padding(16.dp),
+        contentAlignment = Alignment.Center
     ) {
         Text(
             text = pregunta.pregunta,
@@ -129,7 +140,7 @@ fun pregunta(pregunta: Pregunta) {
 
 
 @Composable
-fun opciones(pregunta: Pregunta) {
+fun opciones(pregunta: Pregunta, selected: Boolean, pintar:(Boolean)->Unit) {
 
     val opciones = listOf(pregunta.opcionA, pregunta.opcionB, pregunta.opcionC, pregunta.opcionD)
 
@@ -139,17 +150,39 @@ fun opciones(pregunta: Pregunta) {
             .padding(16.dp)
     ) {
         opciones.forEach { opcion ->
-            botonDeOpcion(opcion)
+            botonDeOpcion(opcion, pregunta, selected){
+                onSelectedChange -> pintar (onSelectedChange)
+            }
         }
     }
 }
 
 @Composable
-fun botonDeOpcion(text: String) {
+fun botonDeOpcion(text: String, pregunta: Pregunta, selected: Boolean,
+                  onSelectedChange : (Boolean) -> Unit) {
+
+    var color by remember {
+        mutableStateOf(Color.Blue)
+    }
+
+    if (!selected) {
+        color = Color.Blue
+    }else if (text.equals(pregunta.respuestaCorrecta)){
+        color = Color.Green
+    }
     Button(
-        onClick = { /* TODO */ },
+        onClick = {
+        if (!selected) {
+            color = if (text.equals(pregunta.respuestaCorrecta)) {
+                Color.Green
+            } else {
+                Color.Red
+            }
+        }
+            onSelectedChange(true)
+        },
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color.Blue
+            containerColor = color
         ),
         modifier = Modifier
             .fillMaxWidth()
@@ -173,8 +206,7 @@ fun botonesAnteriorYSiguiente(pregunta: Pregunta, indice: (Int) -> Unit) {
         horizontalArrangement = Arrangement.SpaceBetween,
         // verticalAlignment = Alignment.CenterVertically
     ) {
-        //BotonAnterior() {cambiaIndice -> indice (cambiaIndice)}
-        //BotonSiguiente() {cambiaIndice -> indice (cambiaIndice)}
+
         Button(
             onClick = { indice(-1) },
             colors = ButtonDefaults.buttonColors(
