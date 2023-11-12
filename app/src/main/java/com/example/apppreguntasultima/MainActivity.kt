@@ -1,5 +1,6 @@
 package com.example.apppreguntasultima
 
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -36,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -47,8 +49,13 @@ import com.example.apppreguntasultima.ui.theme.AppPreguntasUltimaTheme
 import kotlin.random.Random
 
 class MainActivity : ComponentActivity() {
+    private var indice by mutableStateOf(0)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (savedInstanceState != null) {
+            indice = savedInstanceState.getInt("indice")
+        }
         setContent {
             AppPreguntasUltimaTheme {
                 // A surface container using the 'background' color from the theme
@@ -57,9 +64,6 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val listaPreguntas = ManejoFichero.leerFichero(LocalContext.current)
-                    var indice by remember { mutableStateOf(0) }
-
-                    // listaPreguntas.forEach { println(listaPreguntas.toString()) }
                     if (indice == -1) {
                         indice = listaPreguntas.lastIndex
                     } else if (indice > listaPreguntas.lastIndex) {
@@ -72,28 +76,96 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt("indice", indice)
+    }
 }
 
 @Composable
 fun mostrarPregunta(listaPreguntas: List<Pregunta>, question: Pregunta, indice: (Int) -> Unit) {
     var selected by remember { mutableStateOf(false) }
+
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(color = Color(0xFFA2C4DB))
     ) {
-        imagen(question)
-        Spacer(modifier = Modifier.height(8.dp))
-        pregunta(question)
-        opciones(listaPreguntas, question, selected, { pintarSelected ->
-            selected = pintarSelected
-        }) { cambiaIndice ->
-            indice(cambiaIndice)
-            selected = false
-        }
-        botonesAnteriorYSiguiente(question) { cambiaIndice ->
-            indice(cambiaIndice)
-            selected = false
+        if (isLandscape) { //Interfaz Horizontal
+            Row(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Column(
+                    modifier = Modifier
+                        .weight(0.4f)
+                        .fillMaxHeight()
+                        .padding(start = 16.dp, top = 16.dp, bottom = 16.dp, end = 8.dp)
+                ) {
+                    pregunta(question)
+                  Spacer(modifier = Modifier.height(8.dp))
+
+                    Box(
+                        modifier = Modifier.fillMaxSize()
+                            .weight(1f)
+                    ) {
+                        imagen(question)
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    botonesAnteriorYSiguiente(
+                        pregunta = question,
+                        indice = { cambiaIndice ->
+                            indice(cambiaIndice)
+                            selected = false
+                        }
+                    )
+                }
+
+                Column(
+                    modifier = Modifier
+                        .weight(0.3f)
+                        .fillMaxHeight()
+                        .padding(16.dp)
+                ) {
+                    opciones(
+                        listaPreguntas = listaPreguntas,
+                        pregunta = question,
+                        selected = selected,
+                        pintar = { pintarSelected -> selected = pintarSelected },
+                        indice = { cambiaIndice ->
+                            indice(cambiaIndice)
+                            selected = false
+                        }
+                    )
+                }
+            }
+        } else {
+            // Interfaz vertical
+            imagen(question)
+            Spacer(modifier = Modifier.height(8.dp))
+            pregunta(question)
+            Spacer(modifier = Modifier.height(8.dp))
+            opciones(
+                listaPreguntas = listaPreguntas,
+                pregunta = question,
+                selected = selected,
+                pintar = { pintarSelected -> selected = pintarSelected },
+                indice = { cambiaIndice ->
+                    indice(cambiaIndice)
+                    selected = false
+                }
+            )
+            botonesAnteriorYSiguiente(
+                pregunta = question,
+                indice = { cambiaIndice ->
+                    indice(cambiaIndice)
+                    selected = false
+                }
+            )
         }
     }
 }
@@ -284,13 +356,3 @@ fun botonesAnteriorYSiguiente(pregunta: Pregunta, indice: (Int) -> Unit) {
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
