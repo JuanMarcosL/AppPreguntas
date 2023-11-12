@@ -186,7 +186,7 @@ fun botonAleatorio(listaPreguntas: List<Pregunta>, onRandomClick: () -> Unit) {
         ) {
             Icon(
                 painterResource(id = R.drawable.baseline_shuffle_24),
-                contentDescription = "Flecha atrás",
+                contentDescription = "Aleatorio",
                 tint = Color.White,
                 modifier = Modifier.size(24.dp)
             )
@@ -284,34 +284,6 @@ fun botonesAnteriorYSiguiente(pregunta: Pregunta, indice: (Int) -> Unit) {
         }
     }
 }
-
-/*
-@Preview
-@Composable
-fun BotonRedondoConIcono() {
-    val buttonSize = 52.dp
-    val iconSize = 24.dp
-
-    Box(
-        modifier = Modifier
-            .size(buttonSize)
-            .background(color = Color.Blue, shape = CircleShape)
-            .clickable { */
-/* Acción al hacer clic *//*
- },
-        contentAlignment = Alignment.Center
-    ) {
-        Icon(
-            imageVector = Icons.Default.ArrowBack,
-            contentDescription = "Flecha atrás",
-            tint = Color.White,
-            modifier = Modifier.size(iconSize)
-        )
-    }
-}
-*/
-
-
 
 
 
