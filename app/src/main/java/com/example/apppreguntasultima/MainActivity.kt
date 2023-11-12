@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +16,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
@@ -41,6 +44,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.apppreguntasultima.ui.theme.AppPreguntasUltimaTheme
+import kotlin.random.Random
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,16 +59,13 @@ class MainActivity : ComponentActivity() {
                     val listaPreguntas = ManejoFichero.leerFichero(LocalContext.current)
                     var indice by remember { mutableStateOf(0) }
 
-                    //val seleccionada by remember { mutableStateOf(false) }
-
-
                     // listaPreguntas.forEach { println(listaPreguntas.toString()) }
                     if (indice == -1) {
                         indice = listaPreguntas.lastIndex
                     } else if (indice > listaPreguntas.lastIndex) {
                         indice = 0
                     }
-                    mostrarPregunta(listaPreguntas.get(indice)) { cambiaIndice ->
+                    mostrarPregunta(listaPreguntas, listaPreguntas.get(indice)) { cambiaIndice ->
                         indice += cambiaIndice;
                     }
                 }
@@ -74,8 +75,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun mostrarPregunta(question: Pregunta, indice: (Int) -> Unit) {
-    //println("Pregunta recibida en pregunta: ${question.toString()}
+fun mostrarPregunta(listaPreguntas: List<Pregunta>, question: Pregunta, indice: (Int) -> Unit) {
     var selected by remember { mutableStateOf(false) }
     Column(
         modifier = Modifier
@@ -85,17 +85,19 @@ fun mostrarPregunta(question: Pregunta, indice: (Int) -> Unit) {
         imagen(question)
         Spacer(modifier = Modifier.height(8.dp))
         pregunta(question)
-        Spacer(modifier = Modifier.height(20.dp))
-        opciones(question, selected){ pintarSelected ->
+        opciones(listaPreguntas, question, selected, { pintarSelected ->
             selected = pintarSelected
+        }) { cambiaIndice ->
+            indice(cambiaIndice)
+            selected = false
         }
-        //Spacer(modifier = Modifier.height(20.dp))
-        botonesAnteriorYSiguiente(question) {
-                cambiaIndice -> indice(cambiaIndice)
+        botonesAnteriorYSiguiente(question) { cambiaIndice ->
+            indice(cambiaIndice)
             selected = false
         }
     }
 }
+
 
 @Composable
 fun imagen(pregunta: Pregunta) {
@@ -116,18 +118,18 @@ fun imagen(pregunta: Pregunta) {
 
 @Composable
 fun pregunta(pregunta: Pregunta) {
-
     Box(
         modifier = Modifier
             .fillMaxHeight(0.22f)
             .background(color = Color.White)
-            .fillMaxWidth()
-            .padding(16.dp),
+            .fillMaxWidth(),
+        //.padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
         Text(
             text = pregunta.pregunta,
             textAlign = TextAlign.Center,
+            modifier = Modifier.padding(16.dp),
             style = TextStyle(
                 fontWeight = FontWeight.Bold,
                 fontSize = 24.sp,
@@ -135,31 +137,67 @@ fun pregunta(pregunta: Pregunta) {
             )
         )
     }
-
 }
 
-
 @Composable
-fun opciones(pregunta: Pregunta, selected: Boolean, pintar:(Boolean)->Unit) {
-
+fun opciones(
+    listaPreguntas: List<Pregunta>,
+    pregunta: Pregunta,
+    selected: Boolean,
+    pintar: (Boolean) -> Unit,
+    indice: (Int) -> Unit
+) {
     val opciones = listOf(pregunta.opcionA, pregunta.opcionB, pregunta.opcionC, pregunta.opcionD)
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
     ) {
+        botonAleatorio(listaPreguntas) {
+            val randomIndex = Random.nextInt(listaPreguntas.size)
+            pintar(false)
+            indice(randomIndex)
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
         opciones.forEach { opcion ->
-            botonDeOpcion(opcion, pregunta, selected){
-                onSelectedChange -> pintar (onSelectedChange)
+            botonDeOpcion(opcion, pregunta, selected) { onSelectedChange ->
+                pintar(onSelectedChange)
             }
         }
     }
 }
 
 @Composable
-fun botonDeOpcion(text: String, pregunta: Pregunta, selected: Boolean,
-                  onSelectedChange : (Boolean) -> Unit) {
+fun botonAleatorio(listaPreguntas: List<Pregunta>, onRandomClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(end = 4.dp),
+        contentAlignment = Alignment.BottomEnd,
+    ) {
+        Box(
+            modifier = Modifier
+                .size(52.dp)
+                .background(color = Color.Blue, shape = CircleShape)
+                .clickable { onRandomClick() },
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                painterResource(id = R.drawable.baseline_shuffle_24),
+                contentDescription = "Flecha atrás",
+                tint = Color.White,
+                modifier = Modifier.size(24.dp)
+            )
+        }
+    }
+}
+@Composable
+fun botonDeOpcion(
+    text: String, pregunta: Pregunta, selected: Boolean,
+    onSelectedChange: (Boolean) -> Unit
+) {
 
     var color by remember {
         mutableStateOf(Color.Blue)
@@ -167,18 +205,18 @@ fun botonDeOpcion(text: String, pregunta: Pregunta, selected: Boolean,
 
     if (!selected) {
         color = Color.Blue
-    }else if (text.equals(pregunta.respuestaCorrecta)){
+    } else if (text.equals(pregunta.respuestaCorrecta)) {
         color = Color.Green
     }
     Button(
         onClick = {
-        if (!selected) {
-            color = if (text.equals(pregunta.respuestaCorrecta)) {
-                Color.Green
-            } else {
-                Color.Red
+            if (!selected) {
+                color = if (text.equals(pregunta.respuestaCorrecta)) {
+                    Color.Green
+                } else {
+                    Color.Red
+                }
             }
-        }
             onSelectedChange(true)
         },
         colors = ButtonDefaults.buttonColors(
@@ -223,6 +261,8 @@ fun botonesAnteriorYSiguiente(pregunta: Pregunta, indice: (Int) -> Unit) {
                 )
             )
         }
+
+
         Button(
             onClick = { indice(1) },
             colors = ButtonDefaults.buttonColors(
@@ -244,6 +284,41 @@ fun botonesAnteriorYSiguiente(pregunta: Pregunta, indice: (Int) -> Unit) {
         }
     }
 }
+
+/*
+@Preview
+@Composable
+fun BotonRedondoConIcono() {
+    val buttonSize = 52.dp
+    val iconSize = 24.dp
+
+    Box(
+        modifier = Modifier
+            .size(buttonSize)
+            .background(color = Color.Blue, shape = CircleShape)
+            .clickable { */
+/* Acción al hacer clic *//*
+ },
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            imageVector = Icons.Default.ArrowBack,
+            contentDescription = "Flecha atrás",
+            tint = Color.White,
+            modifier = Modifier.size(iconSize)
+        )
+    }
+}
+*/
+
+
+
+
+
+
+
+
+
 
 
 
